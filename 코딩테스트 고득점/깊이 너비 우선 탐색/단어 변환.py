@@ -2,7 +2,7 @@ def solution(begin, target, words):
  
     visited = list()
     answer = 0
-    
+
     def check(a, b):
         n = len(a)
         cnt = 0
@@ -33,9 +33,6 @@ def solution(begin, target, words):
     for w in words:
         if check(begin, w):
             dfs(begin, target, w)
-
-
-
     
     return answer
 
