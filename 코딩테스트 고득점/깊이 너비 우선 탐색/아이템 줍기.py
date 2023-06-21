@@ -24,24 +24,25 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
     dx = [1, 0, -1, 0]
     dy = [0, 1, 0, -1]
 
-    def bfs(start, end):
-        from collections import deque
 
-        queue = deque([start])
-        # board[start[1]][start[0]] = "start"
+    # def bfs(start, end):
+    #     from collections import deque
 
-        while queue:
-            x, y = queue.popleft()
+    #     queue = deque([start])
+    #     # board[start[1]][start[0]] = "start"
 
-            for i in range(4):
-                nx = dx[i] + x
-                ny = dy[i] + y
+    #     while queue:
+    #         x, y = queue.popleft()
 
-                if 0 <= nx < max_corr and 0 <= ny < max_corr and board[ny][nx] == 1:
-                    board[ny][nx] = board[y][x] + 1
-                    queue.append([nx, ny])
+    #         for i in range(4):
+    #             nx = dx[i] + x
+    #             ny = dy[i] + y
+
+    #             if 0 <= nx < max_corr and 0 <= ny < max_corr and board[ny][nx] == 1:
+    #                 board[ny][nx] = board[y][x] + 1
+    #                 queue.append([nx, ny])
         
-    bfs([characterX, characterY], [itemX, itemY])
+    # bfs([characterX, characterY], [itemX, itemY])
 
 
     answer = 0
