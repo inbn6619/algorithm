@@ -9,20 +9,58 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
     max_corr = max([max_x, max_y]) + 1
 
     board = [[0] * (max_corr) for _ in range(max_corr)]
+    # visited = board.copy()
 
     def make_square(x1, y1, x2, y2):
         for y in range(len(board)):
-            for x in range(len(board[0])):
+            for x in range(len(board)):
                 if board[y][x] == 1:
                     continue
                 if (y in [y1, y2] and x1 <= x <= x2 ) or (x in [x1, x2] and y1 <= y <= y2):
                     board[y][x] = 1
 
+    dx = [1, 0, -1, 0]
+    dy = [0, 1, 0, -1]
+
     for x1, y1, x2, y2 in rectangle:
         make_square(x1, y1, x2, y2)
 
-    dx = [1, 0, -1, 0]
-    dy = [0, 1, 0, -1]
+    corr = list()
+    
+
+    def fill_square(y, x):
+        nonlocal corr, check
+        Zero_list = list()
+
+        for i in range(4):
+            nx = dx[i] + x
+            ny = dy[i] + y
+
+            if 0 <= nx < max_corr and 0 <= ny < max_corr and board[ny][nx] == 1:
+                pass
+            else:
+                Zero_list.append([ny,nx])
+
+        if not Zero_list:
+            board[y][x] = 1
+        elif len(Zero_list) == 1:
+            if check:
+                check = False
+                corr = Zero_list[0]
+                y, x = corr
+                fill_square(y, x)
+            else:
+                check = True
+                y, x = Zero_list[0]
+                board[y][x] = 1
+                board[corr[0]][corr[1]] = 1
+
+    for i in range(len(board)):
+        for j in range(len(board)):
+            if board[i][j] == 0:
+                check = True
+                fill_square(i, j)
+
 
 
     # def bfs(start, end):
