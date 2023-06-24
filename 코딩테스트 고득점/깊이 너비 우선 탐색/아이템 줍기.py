@@ -5,8 +5,8 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
     my = 0
 
     for x1, y1, x2, y2 in rectangle:
-        mx = max([mx, x2])
-        my = max([my, y2])
+        mx = max([mx, x2 * 2])
+        my = max([my, y2 * 2])
 
     m = max([my, mx]) + 2
  
@@ -14,8 +14,8 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
 
 
     for x1, y1, x2, y2 in rectangle:
-        for i in range(y1, y2 + 1):
-            for j in range(x1, x2 + 1):
+        for i in range(y1 * 2, y2 * 2 + 1):
+            for j in range(x1 * 2, x2 * 2 + 1):
                 board[i][j] = 1
 
     ox = [-1, 0, 1, -1, 1, -1, 0, 1]
@@ -34,34 +34,29 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
             if board[i][j] == 0:
                 border(i, j)
 
+    def bfs(cy, cx, iy, ix):
+        from collections import deque
+        queue = deque([[cy * 2, cx * 2]])
+
+        dx = [1, 0, -1, 0]
+        dy = [0, 1, 0, -1]
+
+        while queue:
+            y, x = queue.popleft()
+
+            for f in range(4):
+                new_x = dx[f] + x
+                new_y = dy[f] + y
+
+                if 0 <= new_x < m and 0 <= new_y < m and board[new_y][new_x] == 2:
+                    board[new_y][new_x] = board[y][x] + 1
+                    queue.append([new_y, new_x])
+
+        return board[iy * 2][ix * 2] // 2 - 1
 
 
+    answer = bfs(characterY, characterX, itemY, itemX)
 
-
-    # def bfs(cy, cx, iy, ix):
-    #     from collections import deque
-    #     queue = deque([[cy, cx]])
-
-    #     dx = [1, 0, -1, 0]
-    #     dy = [0, 1, 0, -1]
-
-    #     while queue:
-    #         y, x = queue.popleft()
-
-    #         for f in range(4):
-    #             new_x = dx[f] + x
-    #             new_y = dy[f] + y
-
-    #             if 0 <= new_x < m and 0 <= new_y < m and board[new_y][new_x] == 2:
-    #                 board[new_y][new_x] = board[y][x] + 1
-    #                 queue.append([new_y, new_x])
-
-    #     return board[iy][ix]
-
-
-    # answer = bfs(characterY, characterX, itemY, itemX)
-
-    answer = 0
     return answer
 
 
