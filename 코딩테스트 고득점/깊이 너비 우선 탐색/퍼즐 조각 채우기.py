@@ -10,8 +10,9 @@ def solution(game_board, table):
 
     def rotate(array):
         num = len(array)
-        result = [[0] * num for _ in range(num)]
-        for i in range(num):
+        m = len(array[0])
+        result = [[0] * num for _ in range(m)]
+        for i in range(m):
             for j in range(num -1, -1, -1):
                 result[i][j] = array[num-1 -j][i]
         return result
@@ -59,20 +60,54 @@ def solution(game_board, table):
         for coor in array:
             x.append(coor[1])
             y.append(coor[0])
-        
-        min_x = min(x)
-        min_y = min(y)
+
+        square = [[0] * (max(x) - min(x) + 1) for _ in range(max(y) - min(y) + 1)]
 
         for coor in array:
-            coor[1] -= min_x
-            coor[0] -= min_y
+            coor[1] -= min(x)
+            coor[0] -= min(y)
+            square[coor[0]][coor[1]] = 1
 
+        return square
+
+    board_square = list()
+    table_square = [[0] * len(table_coor[0]) for _ in range(len(table_coor))]
 
     for b_coor in board_coor:
-        func(b_coor)
-    for t in table_coor:
-        for t_coor in t:
-            func(t_coor)                
+        board_square.append(func(b_coor))
+    table, tables = table_coor[0], table_coor[1:]
+
+    table_square[0] = [func(i) for i in table]
+
+    for tab in range(1, len(tables) + 1):
+        for t_coor in tables[tab -1]:
+            square = func(t_coor)
+            if rotate(square) in table_square[0]:
+                table_square[tab][table_square[0].index(rotate(square))] = square
+            else:
+                table_square[tab][table_square[0].index(rotate(rotate(rotate(square))))] = rotate(rotate(rotate(square)))
+
+    checklist = [[False] * len(board_square)]
+
+    # def dfs(arr1, arr2, num):
+    #     n = len(arr1)
+    #     m = len(arr1[0])
+
+    #     for i in range(n):
+    #         for j in range(m):
+                
+
+        
+
+    for i in range(len(board_square)):
+        for j in range(len(table_square)):
+            a, b, c, d = len(board_square[0]), len(board_square[0][0]), len(table_square[0]), len(table_square[0][0])
+            if a >= c and b >= d:
+                if board_square[i] == table_square[i]:
+                    checklist[i] = True
+                
+
+
 
     answer = -1
     return answer
