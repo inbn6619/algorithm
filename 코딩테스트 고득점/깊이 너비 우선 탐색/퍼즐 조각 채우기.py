@@ -1,110 +1,94 @@
 def solution(game_board, table):
     from collections import deque
-
     dx = [1, 0, -1, 0]
     dy = [0, 1, 0, -1]
 
-    def rotate(array):
-        num = len(array)
-        m = len(array[0])
-        result = [[0] * num for _ in range(m)]
-        for i in range(m):
-            for j in range(num -1, -1, -1):
-                result[i][j] = array[num-1 -j][i]
-        return result
-
-
-    def bfs(start, board, T, F, n, m):
+    def bfs(start, array, T, F, heigth, width):
         queue = deque([start])
-        coor = list()
-        coor.append(start)
+        coor = [start]
 
         while queue:
             y, x = queue.popleft()
+
             for i in range(4):
                 nx = dx[i] + x
                 ny = dy[i] + y
 
-                if 0 <= nx < m and 0 <= ny < n and board[ny][nx] == T:
-                    coor.append([ny, nx])
+                if 0 <= nx < width and 0 <= ny < heigth and array[ny][nx] == T:
                     queue.append([ny, nx])
-                    board[ny][nx] = F
+                    array[ny][nx] = F
+                    coor.append([ny, nx])
 
         return coor
 
+    game_coor = list()
+    table_coor = list()
+
+    num = len(game_board)
+
+    for i in range(num):
+        for j in range(num):
+            if game_board[i][j] == 0:
+                game_coor.append(bfs([i,j], game_board, 0, 1, num, num))
+            if table[i][j] == 1:
+                table_coor.append(bfs([i, j], table, 1, 0, num, num))
 
     def func(array):
-        y, x = list(), list()
+        y = list()
+        x = list()
+
         for coor in array:
             x.append(coor[1])
             y.append(coor[0])
-
+        
         square = [[0] * (max(x) - min(x) + 1) for _ in range(max(y) - min(y) + 1)]
 
-        for coor in array:
-            coor[1] -= min(x)
-            coor[0] -= min(y)
-            square[coor[0]][coor[1]] = 1
-
-        return square
-
-
-    rotated_table2 = rotate(table)
-    rotated_table3 = rotate(rotated_table2)
-    rotated_table4 = rotate(rotated_table3)
+        for i in range(len(array)):
+            square[array[i][0]-min(y)][array[i][1]-min(x)] = 1
         
-    n = len(game_board)
-    table_coor = list()
-    board_coor = list()
-
-
-    for i in range(n):
-        for j in range(n):
-            if game_board[i][j] == 0:
-                board_coor.append(bfs([i, j], game_board, 0, 1, n, n))
-    
-    for tab in [table, rotated_table2, rotated_table3, rotated_table4]:
-        coor = list()
-        for i in range(n):
-            for j in range(n):
-                if tab[i][j] == 1:
-                    coor.append(bfs([i, j], tab, 1, 0, n, n))
-        table_coor.append(coor)
-
-    board_square = list()
-    
-
-    for i in range(len(board_coor)):
-        board_square.append(func(board_coor[i]))
-
-    def table_squ(array):
-        square = list()
-        for coor in array:
-            square.append(func(coor))
         return square
 
+    game_square = list()
     table_square = list()
+
     for coor in table_coor:
-        table_square.append(table_squ(coor))
+        table_square.append(func(coor))
 
-    board_check = [False] * len(board_square)
-    table_check = [False] * len(table_square[0])
+    for coor in game_coor:
+        game_square.append(func(coor))
 
-    for i in range(len(board_square)):
-        for t in range(len(table_square)):
-            for j in range(len(table_square[t])):
-                if not board_check[i]:
-                    if not table_check[j]:
-                        if board_square[i] == table_square[t][j]:
-                            board_check[i] = True
-                            table_check[j] = True
+    def rotate(array):
+        result = [[0] for _ in range(len(array))]
+        for i in range(len(array)):
+            n = len(array[i])
+            m = len(array[i][0])
+            result[i] = [[0] * n for _ in range(m)]
+            for t in range(m):
+                for j in range(n -1, -1, -1):
+                    result[i][t][j] = array[i][n-1 -j][t]
+
+        return result
+    
+    game_check = [False] * len(game_square)
+    table_check = [False] * len(table_square)
+
+    for i in range(len(game_square)):
+        for t in range(4):
+            for j in range(len(table_square)):
+                if not game_check[i] and not table_check[j]:
+                    if game_square[i] == table_square[j]:
+                        game_check[i] = True
+                        table_check[j] = True
+            table_square = rotate(table_square)
 
     count = 0
 
-    for num in range(len(board_square)):
-        if board_check[num]:
-            for i in range(len(board_square[num])):
-                count += sum(board_square[num][i])
+    for i in range(len(game_square)):
+        if game_check[i]:
+            for j in range(len(game_square[i])):
+                count += sum(game_square[i][j])
+
+
 
     answer = count
     return answer
@@ -122,7 +106,7 @@ game_board4 = [[0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 0, 0, 0,
 
 table4 = [[1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1], [1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1], [1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0], [0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1], [1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1], [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1], [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1]]
 
-# print(solution(game_board1, table1))
-# print(solution(game_board2, table2))
-# print(solution(game_board3, table3))
+print(solution(game_board1, table1))
+print(solution(game_board2, table2))
+print(solution(game_board3, table3))
 print(solution(game_board4, table4)) # 54
